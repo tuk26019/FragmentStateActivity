@@ -13,7 +13,10 @@ const val DIE_SIDES = "dIcE_SiDeS"
 
 class DiceFragment : Fragment() {
     private var sides: Int? = null
+    private val CURRENT_NUMBER_KEY = "currentNumber"
+    private var currentIndexID = 0
 
+    private lateinit var numberDisplayTextView: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -27,11 +30,35 @@ class DiceFragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_dice, container, false).apply {
 
-            val numberDisplayTextView = findViewById<TextView>(R.id.numberDisplay)
+            numberDisplayTextView = findViewById<TextView>(R.id.numberDisplay)
             findViewById<Button>(R.id.rollButton).setOnClickListener {
-                numberDisplayTextView.text = (Random.nextInt(sides!!) + 1).toString()
+                changeIndex()
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(CURRENT_NUMBER_KEY, currentIndexID )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        savedInstanceState?.run{
+            currentIndexID= getInt(CURRENT_NUMBER_KEY,1)
+        }
+        if (currentIndexID ==1)
+            changeIndex()
+        else
+            changeIndex(currentIndexID)
+    }
+    fun changeIndex(){
+        currentIndexID =Random.nextInt(sides!!)+1
+        changeIndex(currentIndexID)
+    }
+    fun changeIndex(side:Int){
+        numberDisplayTextView.text= side.toString()
     }
 
     companion object {
